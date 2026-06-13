@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
-import { runQueryDemo } from '../api/query';
+import { runQuery } from '../api/query';
 
 export interface HistoryEntry {
   prompt: string;
@@ -68,12 +68,26 @@ export function useQueryState() {
     }));
 
     try {
-      const result = await runQueryDemo(prompt.trim());
+      const data = await runQuery(prompt.trim());
+
+      // Check if the backend reported an error in the status field
+      if (data.status && data.status.toLowerCase().includes('error')) {
+        setState((s) => ({
+          ...s,
+          isLoading: false,
+          error: data.status,
+          results: null,
+          generatedSql: data.generatedSql || '',
+        }));
+        return;
+      }
+
+      const resultRows = data.queryResult ?? [];
 
       const entry: HistoryEntry = {
         prompt: prompt.trim(),
-        sql: result.sql,
-        rowCount: result.data.length,
+        sql: data.generatedSql || '',
+        rowCount: resultRows.length,
         timestamp: Date.now(),
       };
 
@@ -83,8 +97,8 @@ export function useQueryState() {
         return {
           ...s,
           isLoading: false,
-          results: result.data,
-          generatedSql: result.sql,
+          results: resultRows,
+          generatedSql: data.generatedSql || '',
           error: null,
           queryHistory: newHistory,
         };
@@ -94,7 +108,7 @@ export function useQueryState() {
       setState((s) => ({
         ...s,
         isLoading: false,
-        error: `Couldn\u2019t generate a query. ${message}`,
+        error: `Failed to reach the backend. Is the Spring Boot server running? ${message}`,
         results: null,
         generatedSql: '',
       }));
