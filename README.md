@@ -141,3 +141,5 @@ The backend queries a SQLite database with these tables:
 - "Orders placed in 2024"
 - "Customers who ordered more than twice"
 - "Most expensive product per category"
+
+Backend Repository - https://github.com/KrishChourasia214/text2sql-backend
