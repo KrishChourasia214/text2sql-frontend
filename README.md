@@ -2,6 +2,8 @@
 
 A React + Vite frontend that lets users ask natural-language questions about a database. The query is sent to a Spring Boot backend which uses an LLM to generate SQL, executes it, and returns the results.
 
+Live Application - https://text2sql-frontend-nu.vercel.app/
+
 ## Prerequisites
 
 - **Node.js** ≥ 18 (includes `npm`)
